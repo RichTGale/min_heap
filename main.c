@@ -4,7 +4,7 @@
  * Demonstrates the use of the min_heap type.
  * 
  * Author: Richard Gale
- * Version: 17th Augist, 2022 
+ * Version: 24th Augist, 2022 
  */
 
 #include <stdio.h>
@@ -36,7 +36,7 @@ int main(int argc, char* argv[])
     }
 
     // Removing the values from the heap from the lowest value
-    // to the highest value and printing it.
+    // to the highest value and printing them.
     printf("VALUES MIN TO MAX:\n");
     while(!(min_heap_is_empty(mh)))
     {
