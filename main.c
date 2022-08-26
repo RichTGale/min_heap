@@ -4,7 +4,7 @@
  * Demonstrates the use of the min_heap type.
  * 
  * Author: Richard Gale
- * Version: 24th Augist, 2022 
+ * Version: 26th Augist, 2022 
  */
 
 #include <stdio.h>
@@ -15,7 +15,7 @@
 int main(int argc, char* argv[])
 {
     min_heap mh;    // The min_heap.
-    int vals[12] = { 5, 23, 6, 1, 76, 45, 887, 42, 4, 99, 8, 6 }; // The values.
+    uint32_t vals[12] = { 5, 23, 6, 1, 76, 45, 887, 42, 4, 99, 8, 6 }; // The values.
     int num_vals = sizeof(vals) / sizeof(int);  // The number of values.
 
     // Initialising the heap.

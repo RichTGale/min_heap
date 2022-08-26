@@ -1,12 +1,12 @@
 /**
  * array.c
  *
- * Data-structure and procedure definitions for a
- * singly-linked-list, an array that dynamically allocates 
- * and frees memory as elements are added to it and removed from it.
+ * Data-structure and procedure definitions for a singly-linked-list, 
+ * an array that dynamically allocates and frees memory as elements
+ * are added to it and removed from it.
  *
  * Author: Richard Gale
- * Version: 23rd August, 2022
+ * Version: 26th August, 2022
  */
 
 #include "array.h"
@@ -57,9 +57,11 @@ void array_free(array* a_ref)
  * Returns the data in the provided array at the element
  * at the provided index.
  */ 
-void* array_get_data(array head, int index)
+void* array_get_data(array head, uint32_t index)
 {
-	for (int i = 0; i < index; i++)
+	uint32_t elem; // The current element of the array. 
+
+	for (elem = 0; elem < index; elem++)
 	{
 		if (head->next != NULL)
 		{
@@ -68,8 +70,8 @@ void* array_get_data(array head, int index)
 		{
 			printf(
 				"\nERROR: In function array_get_data(): "
-				"index %d out of bounds!", 
-				i + 1
+				"index %d out of bounds!\n", 
+				elem + 1
 			);
 			exit(INDEX_OUT_OF_BOUNDS_ERROR);
 		}
@@ -80,9 +82,9 @@ void* array_get_data(array head, int index)
 /**
  * Returns the number of elements in the provided array.
  */
-int array_size(array head)
+uint32_t array_size(array head)
 {
-    int size = 0; // The number of elements in the array
+    uint32_t size = 0; // The number of elements in the array
 
 	if (head->data != NULL)
 	{
@@ -125,7 +127,6 @@ void* array_pop_front(array* head_ref)
 		);
 		exit(EMPTY_LIST_ERROR);
 	}
-
 	return front;
 }
 
@@ -136,7 +137,7 @@ void* array_pop_front(array* head_ref)
 void* array_pop_back(array* head_ref)
 {
 	void* back;		// The data contained in the back element
-	int size;		// The number of elements in the array
+	uint32_t size;		// The number of elements in the array
 
 	size = array_size(*head_ref);
 
@@ -191,6 +192,45 @@ void array_push_front(array* head_ref, void* data)
 }
 
 /**
+ * Removes the element at the provided index and returns it.
+ */
+void* array_pop_data(array* head_ref, uint32_t index)
+{
+	array next;	// A copy of the array starting from the second element.
+	void* data;	// The data to return.
+	uint32_t size = array_size(*head_ref); // The size of the array.
+
+	if (index < size)
+	{
+		for (int elem = 0; elem < size; elem++)
+		{
+			if (elem == index)
+			{
+				data = (*head_ref)->data;
+				next  = (*head_ref)->next;
+				array_free_elem(head_ref);
+				*head_ref = next;
+				size = 0;	// Setting size to zero to break from the loop.
+			}
+			else
+			{
+				head_ref = &(*head_ref)->next;
+			}
+		}
+	}
+	else
+	{
+		printf(
+			"\nERROR: In function array_pop_data(): "
+			"index %d out of bounds!\n", 
+			index
+			);
+		exit(INDEX_OUT_OF_BOUNDS_ERROR);
+	}
+	return data;
+}
+
+/**
  * Adds a new element to the end of the array at the provided
  * array reference.
  */
@@ -215,9 +255,9 @@ void array_push_back(array* head_ref, void* data)
  * Sets the data in the element at the provided index of the
  * array at the provided array reference.
  */
-void array_set_data(array* head_ref, int index, void* data)
+void array_set_data(array* head_ref, uint32_t index, void* data)
 {
-	for (int i = 0; i < index; i++)
+	for (uint32_t i = 0; i < index; i++)
 	{
 		if ((*head_ref)->next != NULL)
 		{

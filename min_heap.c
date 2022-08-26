@@ -4,7 +4,7 @@
  * Data-structure and function definitions for a minimum heap.
  * 
  * Author: Richard Gale
- * Version: 24th August, 2022
+ * Version: 25th August, 2022
  */
 
 #include "min_heap.h"
@@ -17,7 +17,7 @@
 struct min_heap_data {
     array heap;         // Stores the values in the heap.
     enum types type;    // The type of data the min_heap stores
-    int num_elems;      // The number of elements in the heap.
+    uint32_t num_elems; // The number of elements in the heap.
 };
 
 /**
@@ -47,8 +47,9 @@ void min_heap_free(min_heap* mh_ref)
 bool min_heap_val_exists(min_heap mh, void* val)
 {
     bool val_exists = false;    // Whether the value is already in the min_heap.
+    uint32_t i;                 // The index of the element in the heap we are comparing. 
 
-    for (int i = 0; i < array_size(mh->heap); i++)
+    for (i = 0; i < array_size(mh->heap); i++)
     {
         if (val == array_get_data(mh->heap, i))
         {
@@ -86,9 +87,9 @@ void min_heapify_up(min_heap* mh_ref, int i)
 {
     void* p_ref;    // The reference in the heap at the parent's index
     void* i_ref;    // The reference in the heap at the passed index 
-    int p_val;      // The value in the heap at the parent's index
-    int i_val;      // The value in the heap at the provided index 
-    int p;          // The index of the parent of the value at the passed index 
+    uint32_t p_val; // The value in the heap at the parent's index
+    uint32_t i_val; // The value in the heap at the provided index 
+    uint32_t p;     // The index of the parent of the value at the passed index 
 
     if (i > 0)
     {
@@ -108,8 +109,8 @@ void min_heapify_up(min_heap* mh_ref, int i)
         else if ((*mh_ref)->type == INTEGER)
         {
             // Setting values for integer type
-            p_val = *((int*) p_ref);
-            i_val = *((int*) i_ref);
+            p_val = *((uint32_t*) p_ref);
+            i_val = *((uint32_t*) i_ref);
         }
         
         if (i_val < p_val)
@@ -142,11 +143,11 @@ void min_heapify_down(min_heap* mh_ref, int i)
     void* l_ref;    // The reference to the left child of the parent.
     void* r_ref;    // The reference to the right child of the parent.
     void* t_ref;    // Temporary reference for swapping.
-    int m_val;      // The minimum value out of the parent's two children.
-    int i_val;      // The value at the index provided to the procedure.
-    int l;          // The index of the parent's left child.
-    int r;          // The index of the parent's right child.
-    int m;          // The index of the minimum value out of the parent, left and right children.
+    uint32_t m_val; // The minimum value out of the parent's two children.
+    uint32_t i_val; // The value at the index provided to the procedure.
+    uint32_t l;     // The index of the parent's left child.
+    uint32_t r;     // The index of the parent's right child.
+    uint32_t m;     // The index of the minimum value out of the parent, left and right children.
 
     // Determining the indices of the two children of the parent value
     l = (i * 2) + 1;
@@ -170,7 +171,7 @@ void min_heapify_down(min_heap* mh_ref, int i)
         }
         else if ((*mh_ref)->type == INTEGER)
         {
-            m = *((int*) l_ref) < *((int*) r_ref) ? l : r;
+            m = *((uint32_t*) l_ref) < *((uint32_t*) r_ref) ? l : r;
         }
     } 
     else if (l < (*mh_ref)->num_elems)
@@ -190,8 +191,8 @@ void min_heapify_down(min_heap* mh_ref, int i)
         else if ((*mh_ref)->type == INTEGER)
         {
             // Getting child's and parent's values from integer data type
-            m_val = *((int*) array_get_data((*mh_ref)->heap, m));
-            i_val = *((int*) array_get_data((*mh_ref)->heap, i));
+            m_val = *((uint32_t*) array_get_data((*mh_ref)->heap, m));
+            i_val = *((uint32_t*) array_get_data((*mh_ref)->heap, i));
         }
 
         if (m_val < i_val)
@@ -228,13 +229,15 @@ void* min_heap_pop_min(min_heap* mh_ref)
         array_set_data(&(*mh_ref)->heap, 0, array_pop_back(&(*mh_ref)->heap));
         (*mh_ref)->num_elems--;
         min_heapify_down(mh_ref, 0);
-    } else if ((*mh_ref)->num_elems == 1)
+    } 
+    else if ((*mh_ref)->num_elems == 1)
     {
         min = array_pop_back(&(*mh_ref)->heap);
         (*mh_ref)->num_elems--;
-    } else
+    } 
+    else
     {
-        printf("ERROR: In function pop_min(): heap is empty!");
+        printf("ERROR: In function min_heap_pop_min(): heap is empty!");
         exit(HEAP_EMPTY_ERROR);
     }
 
