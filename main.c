@@ -8,6 +8,7 @@
  */
 
 #include <stdio.h>
+#include <stdint.h>
 
 #include "min_heap.h"
 #include "node.h"
