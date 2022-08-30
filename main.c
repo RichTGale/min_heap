@@ -17,7 +17,7 @@ int main(int argc, char* argv[])
 {
     min_heap mh;    // The min_heap.
     uint64_t vals[12] = { 5, 23, 6, 1, 76, 45, 887, 42, 4, 99, 8, 6 }; // The values.
-    int num_vals = sizeof(vals) / sizeof(int);  // The number of values.
+    int num_vals = sizeof(vals) / sizeof(uint64_t);  // The number of values.
     uint64_t i; // The current index in the heap.
 
     // Initialising the heap.
