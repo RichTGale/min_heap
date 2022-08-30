@@ -4,26 +4,30 @@
  * Data-structure and function definitions for a minimum heap.
  * 
  * Author: Richard Gale
- * Version: 25th August, 2022
+ * Version: 30th August, 2022
  */
 
 #include "min_heap.h"
 
+// Error codes
 #define HEAP_EMPTY_ERROR 1
+#define HEAP_FULL_ERROR 2
+
+#define MAX_CAPACITY UINT64_MAX // The number of value the heap can hold.
 
 /**
  * The data contained in the min_heap data-structure
  */
 struct min_heap_data {
     array heap;         // Stores the values in the heap.
-    enum types type;    // The type of data the min_heap stores
-    uint32_t num_elems; // The number of elements in the heap.
+    enum heap_types type;    // The type of data the min_heap stores
+    uint64_t num_elems; // The number of elements in the heap.
 };
 
 /**
  * Initialises the min_heap at the provided reference.
  */
-void min_heap_init(min_heap* mh_ref, enum types t)
+void min_heap_init(min_heap* mh_ref, enum heap_types t)
 {
     *mh_ref = (min_heap) malloc(sizeof(struct min_heap_data));
     array_init(&(*mh_ref)->heap);
@@ -47,7 +51,7 @@ void min_heap_free(min_heap* mh_ref)
 bool min_heap_val_exists(min_heap mh, void* val)
 {
     bool val_exists = false;    // Whether the value is already in the min_heap.
-    uint32_t i;                 // The index of the element in the heap we are comparing. 
+    uint64_t i;                 // The index of the element in the heap we are comparing. 
 
     for (i = 0; i < array_size(mh->heap); i++)
     {
@@ -87,9 +91,9 @@ void min_heapify_up(min_heap* mh_ref, int i)
 {
     void* p_ref;    // The reference in the heap at the parent's index
     void* i_ref;    // The reference in the heap at the passed index 
-    uint32_t p_val; // The value in the heap at the parent's index
-    uint32_t i_val; // The value in the heap at the provided index 
-    uint32_t p;     // The index of the parent of the value at the passed index 
+    uint64_t p_val; // The value in the heap at the parent's index
+    uint64_t i_val; // The value in the heap at the provided index 
+    uint64_t p;     // The index of the parent of the value at the passed index 
 
     if (i > 0)
     {
@@ -109,8 +113,8 @@ void min_heapify_up(min_heap* mh_ref, int i)
         else if ((*mh_ref)->type == INTEGER)
         {
             // Setting values for integer type
-            p_val = *((uint32_t*) p_ref);
-            i_val = *((uint32_t*) i_ref);
+            p_val = *((uint64_t*) p_ref);
+            i_val = *((uint64_t*) i_ref);
         }
         
         if (i_val < p_val)
@@ -128,9 +132,18 @@ void min_heapify_up(min_heap* mh_ref, int i)
  */
 void min_heap_add(min_heap* mh_ref, void* data)
 {
-    array_push_back(&(*mh_ref)->heap, data);
-    min_heapify_up(mh_ref, (*mh_ref)->num_elems);
-    (*mh_ref)->num_elems++;
+    if ((*mh_ref)->num_elems < MAX_CAPACITY)
+    {
+        array_push_back(&(*mh_ref)->heap, data);
+        min_heapify_up(mh_ref, (*mh_ref)->num_elems);
+        (*mh_ref)->num_elems++;
+    }
+    else
+    {
+        printf("\nERROR: In function min_heap_add(): You attempted to "
+                "add a value to a heap that was at maximum capacity!\n");
+        exit(HEAP_FULL_ERROR);
+    }
 }
 
 /**
@@ -143,11 +156,11 @@ void min_heapify_down(min_heap* mh_ref, int i)
     void* l_ref;    // The reference to the left child of the parent.
     void* r_ref;    // The reference to the right child of the parent.
     void* t_ref;    // Temporary reference for swapping.
-    uint32_t m_val; // The minimum value out of the parent's two children.
-    uint32_t i_val; // The value at the index provided to the procedure.
-    uint32_t l;     // The index of the parent's left child.
-    uint32_t r;     // The index of the parent's right child.
-    uint32_t m;     // The index of the minimum value out of the parent, left and right children.
+    uint64_t m_val; // The minimum value out of the parent's two children.
+    uint64_t i_val; // The value at the index provided to the procedure.
+    uint64_t l;     // The index of the parent's left child.
+    uint64_t r;     // The index of the parent's right child.
+    uint64_t m;     // The index of the minimum value out of the parent, left and right children.
 
     // Determining the indices of the two children of the parent value
     l = (i * 2) + 1;
@@ -171,7 +184,7 @@ void min_heapify_down(min_heap* mh_ref, int i)
         }
         else if ((*mh_ref)->type == INTEGER)
         {
-            m = *((uint32_t*) l_ref) < *((uint32_t*) r_ref) ? l : r;
+            m = *((uint64_t*) l_ref) < *((uint64_t*) r_ref) ? l : r;
         }
     } 
     else if (l < (*mh_ref)->num_elems)
@@ -191,8 +204,8 @@ void min_heapify_down(min_heap* mh_ref, int i)
         else if ((*mh_ref)->type == INTEGER)
         {
             // Getting child's and parent's values from integer data type
-            m_val = *((uint32_t*) array_get_data((*mh_ref)->heap, m));
-            i_val = *((uint32_t*) array_get_data((*mh_ref)->heap, i));
+            m_val = *((uint64_t*) array_get_data((*mh_ref)->heap, m));
+            i_val = *((uint64_t*) array_get_data((*mh_ref)->heap, i));
         }
 
         if (m_val < i_val)

@@ -16,22 +16,23 @@
 int main(int argc, char* argv[])
 {
     min_heap mh;    // The min_heap.
-    uint32_t vals[12] = { 5, 23, 6, 1, 76, 45, 887, 42, 4, 99, 8, 6 }; // The values.
+    uint64_t vals[12] = { 5, 23, 6, 1, 76, 45, 887, 42, 4, 99, 8, 6 }; // The values.
     int num_vals = sizeof(vals) / sizeof(int);  // The number of values.
+    uint64_t i; // The current index in the heap.
 
     // Initialising the heap.
     min_heap_init(&mh, INTEGER);
 
     // Printing the values.
     printf("VALUES UNORDERED:\n");
-    for (int i = 0; i < num_vals; i++)
+    for (i = 0; i < num_vals; i++)
     {
         printf("%d, ", vals[i]);
     }
     printf("\n");
 
     // Adding the values to the heap.
-    for (int i = 0; i < num_vals; i++)
+    for (i = 0; i < num_vals; i++)
     {
         min_heap_add(&mh, &(vals[i]));
     }
