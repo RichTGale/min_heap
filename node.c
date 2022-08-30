@@ -4,7 +4,7 @@
  * Data structure and function definitions for a weighted graph node.
  * 
  * Author: Richard Gale
- * Version: 26th August, 2022 
+ * Version: 28th August, 2022 
  */
 
 #include "node.h"
@@ -13,28 +13,55 @@
  * The data contained within the node data-structure.
  */
 struct node_data {
+    array edges;    // The edges of the node's neighbour's.
     node* came_from; // A reference to the node preceeding this node on the path.
-    uint16_t x;  // x coordinate.
-    uint16_t y;  // y coordinate.
-    uint16_t z;  // z coordinate.
-    uint32_t f;  // Estimated cost from start to end node after going through this node.
-    uint32_t g;  // Cost from start node to this node.
-    array neighbours;  // The nodes in the graph that this node is connected to.
+    uint8_t x;  // x coordinate.
+    uint8_t y;  // y coordinate.
+    uint8_t z;  // z coordinate.
+    uint64_t f;  // Estimated total cost of path after going through this node.
+    uint64_t g;  // Cost of the path from start node to this node.
 };
 
 /**
  * Initialises the node at the provided reference.
  */
-void node_init(node* n_ref, uint16_t x, uint16_t y, uint16_t z)
+void node_init(node* n_ref, uint8_t x, uint8_t y, uint8_t z)
 {
     *n_ref = (node) malloc(sizeof(struct node_data));
+    array_init(&(*n_ref)->edges);
     (*n_ref)->came_from = NULL;
     (*n_ref)->x = x;
     (*n_ref)->y = y;
     (*n_ref)->z = z;
-    (*n_ref)->f = UINT32_MAX;
-    (*n_ref)->g = UINT32_MAX;
-    array_init(&(*n_ref)->neighbours);
+    (*n_ref)->f = UINT64_MAX;
+    (*n_ref)->g = UINT64_MAX;
+}
+
+/**
+ * Initialises the node's edges.
+ */
+void node_init_edges(node* n_ref, array neighbours)
+{
+    node* neighbour;    // The neighbour the edge belongs to.
+    edge* edges;    // The array of edges
+    uint8_t x;  // x coordinate of the neighbour.
+    uint8_t y;  // y coordinate of the neighbour.
+    uint8_t z;  // z coordinate of the neighbour.
+    
+    // Allocating memory for all the edges.
+    edges = (edge*) malloc(array_size(neighbours) * sizeof(edge));
+
+    // Initialising and adding the edge to the node provided
+    // to this function.
+    for (uint32_t e = 0; e < array_size(neighbours); e++)
+    {
+        neighbour = (node*) array_get_data(neighbours, e);
+        x = (*neighbour)->x;
+        y = (*neighbour)->y;
+        z = (*neighbour)->z;
+        edge_init(&(edges[e]), x, y, z, 1);
+        array_push_back(&(*n_ref)->edges, &(edges[e]));
+    }
 }
 
 /**
@@ -42,6 +69,11 @@ void node_init(node* n_ref, uint16_t x, uint16_t y, uint16_t z)
  */
 void node_free(node* n_ref)
 {
+    for (uint32_t e = 0; e < array_size((*n_ref)->edges); e++)
+    {
+        edge_free(array_get_data((*n_ref)->edges, e));
+    }
+    array_free(&(*n_ref)->edges);
     free(*n_ref);
 }
 
@@ -96,9 +128,12 @@ uint32_t node_get_g(node n)
 }
 
 
-array* node_get_neighbours(node* n_ref)
+/**
+ * Returns the edges of the supplied node,
+ */
+array node_get_edges(node n)
 {
-    return &(*n_ref)->neighbours;
+    return n->edges;
 }
 
 /**
@@ -114,7 +149,7 @@ void node_set_came_from(node* n, node* came_from)
  * Sets the estimated total cost of a path if the path were to go 
  * through the node at the provided reference.
  */
-void node_set_f(node* n, uint32_t f)
+void node_set_f(node* n, uint64_t f)
 {
     (*n)->f = f;
 }
@@ -123,7 +158,7 @@ void node_set_f(node* n, uint32_t f)
  * Sets the cost of a path from the path's starting point to
  * the node at the provided reference.
  */
-void node_set_g(node* n, uint32_t g)
+void node_set_g(node* n, uint64_t g)
 {
     (*n)->g = g;
 }
@@ -133,32 +168,46 @@ void node_set_g(node* n, uint32_t g)
  * it as a neighbour.
  * Note, this creates a one-way connection.
  */
-void node_add_neighbour(node* n_ref, node* neighbour)
+void node_add_edge(node* from_ref, node* to_ref, uint8_t weight)
 {
-    bool already_neighbours = false;    // Whether the two provided nodes are already neighbours
+    bool already_neighbours = false; // Whether the two provided nodes are already neighbours
+    edge* e_ref;    // The edge seperating the nodes
+    uint8_t x; // The x coordinate of the node an edge belongs to.
+    uint8_t y; // The y coordinate of the node an edge belongs to.
+    uint8_t z; // The z coordinate of the node an edge belongs to.
+    uint32_t i; // The index of the current edge.
 
     // Determining if the nodes are already neighbours.
-    for (int n = 0 ; n < array_size((*n_ref)->neighbours); n++)
+    for (i = 0 ; i < array_size((*from_ref)->edges); i++)
     {
-        if (neighbour == array_get_data((*n_ref)->neighbours, n))
-        {
-            already_neighbours = true;
+        // Getting the coordinates of the node the current edge
+        // belongs to.
+        x = edge_get_x(*((edge*) array_get_data((*from_ref)->edges, i)));
+        y = edge_get_y(*((edge*) array_get_data((*from_ref)->edges, i)));
+        z = edge_get_z(*((edge*) array_get_data((*from_ref)->edges, i)));
 
+        if ((*to_ref)->x == x && (*to_ref)->y == y && (*to_ref)->z == z)
+        {
+            already_neighbours = true; // The nodes were already neighbours.
         }
     }
 
     if (!already_neighbours)
     {
-        // Adding the node as a neighbour.
-        array_push_back(&(*n_ref)->neighbours, neighbour);
+        // Initialising and adding the neighbour as an edge.
+        e_ref = (edge*) malloc(sizeof(edge));
+        edge_init(&(e_ref[0]), (*to_ref)->x, (*to_ref)->y, 
+                                        (*to_ref)->z, weight);
+        array_push_back(&(*from_ref)->edges, &(e_ref[0]));
     }
     else
     {
         // The node was already a neighbour so we are printing a warning.
-        printf("\nWARNING: In function node_add_neighbour(): "
-            "Node at memory address %p was already a neighbour of "
-            "the node at memory address %p and wan't added again!\n", 
-            neighbour, n_ref);
+        printf("\nWARNING: In function node_add_edge(): "
+            "Node at coords (%d,%d,%d) was already a neighbour of the "
+            "node at coords (%d,%d,%d) and wasn't added again!\n", 
+            node_get_x(*to_ref), node_get_y(*to_ref), node_get_z(*to_ref), 
+            node_get_x(*from_ref), node_get_y(*from_ref), node_get_z(*from_ref));
     }
 }
 
@@ -167,30 +216,37 @@ void node_add_neighbour(node* n_ref, node* neighbour)
  * them from considered neighbours.
  * Note, this is a one-way disconnection.
  */
-void node_remove_neighbour(node* n_ref, node* neighbour)
+void node_remove_edge(node* from_ref, node* to_ref)
 {
-    bool already_neighbours = false;    // Whether the two provided nodes are already neighbours.
+    bool already_neighbours = false; // Whether the provided nodes are already neighbours.
+    uint8_t x; // The x coord of the node an edge belongs to.
+    uint8_t y; // The y coord of the node an edge belongs to.
+    uint8_t z; // The z coord of the node an edge belongs to.
 
     // Finding the neighbour to remove.
-    for (int n = 0 ; n < array_size((*n_ref)->neighbours); n++)
+    for (int i = 0 ; i < array_size((*from_ref)->edges); i++)
     {
-        if (neighbour == array_get_data((*n_ref)->neighbours, n))
-        {
-            already_neighbours = true;
+        // Getting the coordinates of the node the current edge
+        // belongs to.
+        x = edge_get_x(*((edge*) array_get_data((*from_ref)->edges, i)));
+        y = edge_get_y(*((edge*) array_get_data((*from_ref)->edges, i)));
+        z = edge_get_z(*((edge*) array_get_data((*from_ref)->edges, i)));
 
-            // Removing the neighbour
-            array_pop_data(&(*n_ref)->neighbours, n);
+        if ((*to_ref)->x == x && (*to_ref)->y == y && (*to_ref)->z == z)
+        {
+            already_neighbours = true; // The nodes were alrady neighbours.
+            array_pop_data(&(*from_ref)->edges, i); // Removing the edge.
         }
     }
 
-    printf("ARRAYSIZE:%d\n", array_size((*n_ref)->neighbours));
     if (!already_neighbours)
     {
         // The node wasn't a neighbour so we are printing a warning.
-        printf("\nWARNING: In function node_remove_neighbour(): "
-            "Node at memory address %p wasn't a neighbour of "
-            "the node at memory address %p so it wasn't removed!\n", 
-            neighbour, n_ref);
+        printf("\nWARNING: In function node_remove_edge(): "
+            "Node at coords (%d,%d,%d) wasn't a neighbour of the "
+            "node at coords (%d,%d,%d) so it wasn't removed!\n", 
+            node_get_x(*to_ref), node_get_y(*to_ref), node_get_z(*to_ref), 
+            node_get_x(*from_ref), node_get_y(*from_ref), node_get_z(*from_ref));
     }
 }
 
@@ -199,6 +255,6 @@ void node_remove_neighbour(node* n_ref, node* neighbour)
  */
 void node_print(node n)
 {
-    printf("{ node: x:%d, y:%d, z:%d, f:%ld, g:%ld }", 
+    printf("{ node: x:%d, y:%d, z:%d, f:%" PRIu64 ", g:%" PRIu64 " }", 
             n->x, n->y, n->z, n->f, n->g);
 }
