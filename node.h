@@ -4,7 +4,7 @@
  * Data structure and procedure declarations for a weighted graph node.
  * 
  * Author: Richard Gale
- * Version: 30th August, 2022 
+ * Version: 15th June, 2023
  */
 
 #ifndef NODE_H
@@ -20,6 +20,8 @@
 #include "array.h"
 #include "edge.h"
 
+enum node_type { PASSABLE, IMPASSABLE };
+
 /**
  * The node data-structure.
  */
@@ -28,17 +30,17 @@ typedef struct node_data* node;
 /**
  * Initialises the node at the provided reference.
  */
-void node_init(node* n_ref, uint8_t x, uint8_t y, uint8_t z);
+void node_init(node* np, uint8_t x, uint8_t y, uint8_t z, enum node_type type);
 
 /**
  * Initialises the node's edges.
  */
-void node_init_edges(node* n_ref, array edges);
+void node_init_edges(node* np, array neighbours, uint8_t* weights);
 
 /**
  * Frees the memory allocated to the node at the provided reference.
  */
-void node_free(node* n_ref);
+void node_free(node* np);
 
 /**
  * Returns a reference to the node that preceeded the
@@ -77,6 +79,8 @@ uint64_t node_get_g(node n);
  */
 array node_get_edges(node n);
 
+enum node_type node_get_type(node n);
+
 /**
  * Sets the node at the provided reference as being the node 
  * preceeding the node at the provided reference on a path.
@@ -101,6 +105,11 @@ void node_set_g(node* n, uint64_t g);
  * Note, this creates a one-way connection.
  */
 void node_add_edge(node* from_ref, node* to_ref, uint8_t weight);
+
+/**
+ * Resets the node to its original state.
+ */
+void node_reset(node* n_ref);
 
 /**
  * Removes a connection from node from another, stopping

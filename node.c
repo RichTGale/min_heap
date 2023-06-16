@@ -4,7 +4,7 @@
  * Data structure and function definitions for a weighted graph node.
  * 
  * Author: Richard Gale
- * Version: 30th August, 2022 
+ * Version: 15th June, 2023
  */
 
 #include "node.h"
@@ -20,27 +20,29 @@ struct node_data {
     uint8_t z;  // z coordinate.
     uint64_t f;  // Estimated total cost of path after going through this node.
     uint64_t g;  // Cost of the path from start node to this node.
+    enum node_type type;
 };
 
 /**
  * Initialises the node at the provided reference.
  */
-void node_init(node* n_ref, uint8_t x, uint8_t y, uint8_t z)
+void node_init(node* np, uint8_t x, uint8_t y, uint8_t z, enum node_type type)
 {
-    *n_ref = (node) malloc(sizeof(struct node_data));
-    array_init(&(*n_ref)->edges);
-    (*n_ref)->came_from = NULL;
-    (*n_ref)->x = x;
-    (*n_ref)->y = y;
-    (*n_ref)->z = z;
-    (*n_ref)->f = UINT64_MAX;
-    (*n_ref)->g = UINT64_MAX;
+    *np = (node) malloc(sizeof(struct node_data));
+    array_init(&(*np)->edges);
+    (*np)->came_from = NULL;
+    (*np)->x = x;
+    (*np)->y = y;
+    (*np)->z = z;
+    (*np)->f = UINT64_MAX;
+    (*np)->g = UINT64_MAX;
+    (*np)->type = type;
 }
 
 /**
  * Initialises the node's edges.
  */
-void node_init_edges(node* n_ref, array neighbours)
+void node_init_edges(node* np, array neighbours, uint8_t* weights)
 {
     node* neighbour;    // The neighbour the edge belongs to.
     edge* edges;    // The array of edges
@@ -48,39 +50,41 @@ void node_init_edges(node* n_ref, array neighbours)
     uint8_t y;  // y coordinate of the neighbour.
     uint8_t z;  // z coordinate of the neighbour.
     uint64_t e; // The index of the current edge.
+    uint8_t w;  // The weight of the edge of the neighbour.
     
     // Allocating memory for all the edges.
     edges = (edge*) malloc(array_size(neighbours) * sizeof(edge));
 
-    // Initialising and adding the edge to the node provided
-    // to this function.
+    // Initialising and adding the edges to the neighbours of the 
+    // node provided to this function.
     for (e = 0; e < array_size(neighbours); e++)
     {
         neighbour = (node*) array_get_data(neighbours, e);
-        x = (*neighbour)->x;
-        y = (*neighbour)->y;
-        z = (*neighbour)->z;
-        edge_init(&(edges[e]), x, y, z, 1);
-        array_push_back(&(*n_ref)->edges, &(edges[e]));
+        w = weights[e];
+        x = (*np)->x;
+        y = (*np)->y;
+        z = (*np)->z;
+        edge_init(&(edges[e]), x, y, z, w);
+        array_push_back(&(*neighbour)->edges, &(edges[e]));
     }
 }
 
 /**
  * Frees the memory allocated to the node at the provided reference.
  */
-void node_free(node* n_ref)
+void node_free(node* np)
 {
     uint64_t e; // The index of the current edge.
 
     // Freeing the edges.
-    for (e = 0; e < array_size((*n_ref)->edges); e++)
+    for (e = 0; e < array_size((*np)->edges); e++)
     {
-        edge_free(array_get_data((*n_ref)->edges, e));
+        edge_free(array_get_data((*np)->edges, e));
     }
-    array_free(&(*n_ref)->edges);
+    array_free(&(*np)->edges);
 
     // Freeing the node.
-    free(*n_ref);
+    free(*np);
 }
 
 /**
@@ -140,6 +144,11 @@ uint64_t node_get_g(node n)
 array node_get_edges(node n)
 {
     return n->edges;
+}
+
+enum node_type node_get_type(node n)
+{
+    return n->type;
 }
 
 /**
@@ -218,6 +227,16 @@ void node_add_edge(node* from_ref, node* to_ref, uint8_t weight)
 }
 
 /**
+ * Resets the node to its original state.
+ */
+void node_reset(node* n_ref)
+{
+    (*n_ref)->came_from = NULL;
+    (*n_ref)->f = UINT64_MAX;
+    (*n_ref)->g = UINT64_MAX;
+}
+
+/**
  * Removes a connection from node from another, stopping
  * them from considered neighbours.
  * Note, this is a one-way disconnection.
@@ -262,6 +281,6 @@ void node_remove_edge(node* from_ref, node* to_ref)
  */
 void node_print(node n)
 {
-    printf("{ node: x:%d, y:%d, z:%d, f:%" PRIu64 ", g:%" PRIu64 " }", 
-            n->x, n->y, n->z, n->f, n->g);
+    printf("{ node: x:%d, y:%d, z:%d, f:%" PRIu64 ", g:%" PRIu64 ", type:%d }", 
+            n->x, n->y, n->z, n->f, n->g, n->type);
 }
