@@ -1,10 +1,11 @@
 /**
  * node.h
  * 
- * Data structure and procedure declarations for a weighted graph node.
+ * This file contains the data structure and procedure declarations for a
+ * graph node.
  * 
  * Author: Richard Gale
- * Version: 15th June, 2023
+ * Version: 16th June, 2023
  */
 
 #ifndef NODE_H
@@ -20,6 +21,9 @@
 #include "array.h"
 #include "edge.h"
 
+/**
+ * Identities of the types of nodes.
+ */
 enum node_type { PASSABLE, IMPASSABLE };
 
 /**
@@ -28,98 +32,107 @@ enum node_type { PASSABLE, IMPASSABLE };
 typedef struct node_data* node;
 
 /**
- * Initialises the node at the provided reference.
+ * This procedure initialises the node at the provided reference.
  */
 void node_init(node* np, uint8_t x, uint8_t y, uint8_t z, enum node_type type);
 
 /**
- * Initialises the node's edges.
+ * This procedure initialises the edges that belong to the neighbouring nodes 
+ * of the node at the pointer that was provided to this procedure.
  */
 void node_init_edges(node* np, array neighbours, uint8_t* weights);
 
 /**
- * Frees the memory allocated to the node at the provided reference.
+ * This procedure de-allocates memory from the node at the pointer
+ * provided to this procedure as well as the memory allocated to its edges.
  */
 void node_free(node* np);
 
 /**
- * Returns a reference to the node that preceeded the
- * provided node on the path.
+ * This procedure returns the node on a path created by the astar algorithm
+ * that preceeds the node provided to this procedure on that path.
  */
 node* node_get_came_from(node n);
 
 /**
- * Returns the x coordinate of the provided node.
+ * This procedure returns the x coordinate of the node provided to it.
  */
 uint8_t node_get_x(node n);
 
 /**
- * Returns the y coordinate of the provided node.
+ * This procedure returns the y coordinate of the node provided to it.
  */
 uint8_t node_get_y(node n);
 
 /**
- * Returns the z coordinate of the provided node.
+ * This procedure returns the z coordinate of the node provided to it.
  */
 uint8_t node_get_z(node n);
 
 /**
- * Returns the estimated total cost of a path if
- * the path goes through the provided node.
+ * This procedure returns the estimated total cost of a path from the start
+ * node to the goal node if the path goes through the node provided to
+ * this procedure.
  */
 uint64_t node_get_f(node n);
 
 /**
- * Returns the cost of a path from its start to the provided node.
+ * This procedure returns the cost of a path from its start to the
+ * node provided to this procedure.
  */
 uint64_t node_get_g(node n);
 
 /**
- * Returns the edges of the supplied node,
+ * This procedure returns the edges of the node provided to this procedure.
  */
 array node_get_edges(node n);
 
+/**
+ * This procedure returns the node-type of the node provided to this procedure.
+ */
 enum node_type node_get_type(node n);
 
 /**
- * Sets the node at the provided reference as being the node 
- * preceeding the node at the provided reference on a path.
+ * This procedure sets the node on a path created by the astar algorithm
+ * that preceeds the node at the node pointer provided to this procedure 
+ * on that path.
  */
 void node_set_came_from(node* n, node* came_from);
 
 /**
- * Sets the estimated total cost of a path if the path were to go 
- * through the node at the provided reference.
+ * This procedure sets the estimated total cost of a path from the start
+ * node to the goal node if the path goes through the node at the node pointer
+ * provided to this procedure.
  */
 void node_set_f(node* n, uint64_t f);
 
 /**
- * Sets the cost of a path from the path's starting point to
- * the node at the provided reference.
+ * This procedure sets the cost of a path from its start to the
+ * node at the node pointer provided to this procedure.
  */
 void node_set_g(node* n, uint64_t g);
 
 /**
- * Adds a connection from one node to another, considering 
- * it as a neighbour.
- * Note, this creates a one-way connection.
+ * This procedure adds a connection from one graph node to another, making the
+ * "to" node be considered a neighbour of the "from" node.
+ * Note: this creates a one-way connection.
  */
 void node_add_edge(node* from_ref, node* to_ref, uint8_t weight);
 
 /**
- * Resets the node to its original state.
+ * This procedure resets the node to its original state.
  */
 void node_reset(node* n_ref);
 
 /**
- * Removes a connection from node from another, stopping
- * them from considered neighbours.
- * Note, this is a one-way disconnection.
+ * This procedure removes a connection from one node from another, stopping
+ * the "from" node from being considered a neighbour of the "to" node.
+ * Note: this is a one-way disconnection.
  */
 void node_remove_edge(node* from_ref, node* to_ref);
 
 /**
- * Prints the node.
+ * This procedure prints information about the node provided to it.
  */
 void node_print(node n);
 
