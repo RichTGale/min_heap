@@ -1,31 +1,41 @@
 /**
  * edge.h
  * 
- * Data-structure and function definitions for an edge.
- * Simulates the an edge of a graph-node.
+ * This file contains the internal data-structure and procedure definitions
+ * for the edge type.
+ * An edge represents the cost in an astar algorithm to move from a graph
+ * node to a neighbouring node.
  * 
  * Author: Richard Gale
- * Version: 16th March, 2023
+ * Version: 16th June, 2023
  */
 
 #include "edge.h"
 
 /**
- * The data contained in an the edge.
+ * The internal data-structure of the edge type.
  */
 struct edge_data {
-    uint8_t x; // The x coordinates of the neighbour this edge is against.
-    uint8_t y; // The y coordinates of the neighbour this edge is against.
-    uint8_t z; // The z coordinates of the neighbour this edge is against.
-    uint8_t w; // The weight of the edge.
+    /* The coordinates of the relevant neighbour of the node this edge
+     * belongs to. */
+    uint8_t x;
+    uint8_t y;
+    uint8_t z;
+
+    /* The weight/cost to move from the neighbour of the the node that this
+     * edge belongs into the node this edge belongs to. */
+    uint8_t w;
 };
 
 /**
- * Initialises the edge. 
+ * This procedure initialises the edge at the edge pointer provided to it. 
  */
 void edge_init(edge* ep, uint8_t x, uint8_t y, uint8_t z, uint8_t w)
 {
+    /* Allocating memory to the edge. */
     *ep = (edge) malloc(sizeof(struct edge_data));
+
+    /* Initialising the edge's internal data. */
     (*ep)->x = x;
     (*ep)->y = y;
     (*ep)->z = z;
@@ -33,7 +43,8 @@ void edge_init(edge* ep, uint8_t x, uint8_t y, uint8_t z, uint8_t w)
 }
 
 /**
- * Frees the memory allocated to the edge. 
+ * This procedure de-allocates memory from the edge at the edge pointer
+ * provided to it.
  */
 void edge_free(edge* ep)
 {
@@ -41,7 +52,8 @@ void edge_free(edge* ep)
 }
 
 /**
- * Returns the x coordinate of the neighbour this edge is against.
+ * This procedure returns the x coordinate of the relevant neighbour of the
+ * node the edge provided to it belongs to.
  */
 uint8_t edge_get_x(edge e)
 {
@@ -49,7 +61,8 @@ uint8_t edge_get_x(edge e)
 }
 
 /**
- * Returns the y coordinate of the neighbour this edge is against.
+ * This procedure returns the y coordinate of the relevant neighbour of the
+ * node the edge provided to it belongs to.
  */
 uint8_t edge_get_y(edge e)
 {
@@ -57,7 +70,8 @@ uint8_t edge_get_y(edge e)
 }
 
 /**
- * Returns the z coordinate of the neighbour this edge is against.
+ * This procedure returns the z coordinate of the relevant neighbour of the
+ * node the edge provided to it belongs to.
  */
 uint8_t edge_get_z(edge e)
 {
@@ -65,13 +79,16 @@ uint8_t edge_get_z(edge e)
 }
 
 /**
- * Returns the weight of the edge.
+ * This procedure returns the weight of the edge provided it.
  */
 uint8_t edge_get_w(edge e)
 {
     return e->w;
 }
 
+/**
+ * This procedure prints information about the edge provided to it.
+ */
 void edge_print(edge e)
 {
     fprintf(stdout, "Edge: { x:%d, y:%d, z:%d, w:%d }\n", e->x, e->y, e->z, e->w);
