@@ -1,13 +1,13 @@
 /**
  * min_heap.c
  * 
- * This file contains the internal data-structure and procedure definitions 
+ * This file contains the internal data-structure and function definitions 
  * for a minimum heap.
  * A minimum heap stores values as a binary-tree and in such an order that
  * the minimum value is at the very top, and is not a child of any other value.
  * 
  * Author: Richard Gale
- * Version: 16th June, 2023
+ * Version: 17th June, 2023
  */
 
 #include "min_heap.h"
@@ -33,7 +33,7 @@ struct min_heap_data {
 };
 
 /**
- * This procedure initialises the min_heap at the provided min_heap pointer.
+ * This function initialises the min_heap at the provided min_heap pointer.
  */
 void min_heap_init(min_heap* mhp, enum heap_types t)
 {
@@ -52,7 +52,7 @@ void min_heap_init(min_heap* mhp, enum heap_types t)
 }
 
 /**
- * This procedure de-allocates memory from the min_heap at the min_heap 
+ * This function de-allocates memory from the min_heap at the min_heap 
  * pointer provided to it.
  */
 void min_heap_free(min_heap* mhp)
@@ -65,7 +65,7 @@ void min_heap_free(min_heap* mhp)
 }
 
 /**
- * This procedure returns true if the memory address of the value provided to
+ * This function returns true if the memory address of the value provided to
  * it is already in the min_heap at the min_heap pointer that was also
  * provided.
  */
@@ -77,7 +77,7 @@ bool min_heap_val_exists(min_heap mh, void* val)
     /* The index of the element in the heap we are comparing. */
     uint64_t i;
 
-    /* Comparing the value provided to this procedure to all the lements in
+    /* Comparing the value provided to this function to all the lements in
      * the heap. */
     for (i = 0; i < array_size(mh->heap); i++)
     {
@@ -93,7 +93,7 @@ bool min_heap_val_exists(min_heap mh, void* val)
 }
 
 /**
- * This procedure returns true if the provided min_heap is not storing
+ * This function returns true if the provided min_heap is not storing
  * any values.
  */
 bool min_heap_is_empty(min_heap mh)
@@ -113,8 +113,8 @@ bool min_heap_is_empty(min_heap mh)
 }
 
 /**
- * This procedure swaps the value in the min_heap's storage at the index 
- * provided to the procedure with its parent's value if the value at the 
+ * This function swaps the value in the min_heap's storage at the index 
+ * provided to the function with its parent's value if the value at the 
  * index is lower than the parent, moving the value up through the heap until 
  * the minimum heap state is satisfied.
  */
@@ -170,14 +170,14 @@ void min_heap_float_up(min_heap* mhp, int child_index)
             array_set_data(&(*mhp)->heap, child_index, parentp);
             array_set_data(&(*mhp)->heap, parent_index, childp);
 
-            /* Repeating this procedure on the same value. */
+            /* Repeating this function on the same value. */
             min_heap_float_up(mhp, parent_index);
         }
     }
 }
 
 /**
- * This procedure adds a pointer to a value to the min_heap.
+ * This function adds a pointer to a value to the min_heap.
  */
 void min_heap_add(min_heap* mhp, void* data)
 {
@@ -225,7 +225,7 @@ void min_heap_sink_down(min_heap* mhp, int parent_index)
     uint64_t min_val;
 
     /* The value of the storage element at the index provided to
-     * this procedure. */
+     * this function. */
     uint64_t parent_val;
 
     /* The index of the parent's left child in the heap's storage. */
@@ -311,15 +311,15 @@ void min_heap_sink_down(min_heap* mhp, int parent_index)
                     min_index, array_get_data((*mhp)->heap, parent_index));
             array_set_data(&(*mhp)->heap, parent_index, tempp);
 
-            /* Repeating this procedure on the same value which was at the
-             * index provided to this procedure in the heap's storage. */
+            /* Repeating this function on the same value which was at the
+             * index provided to this function in the heap's storage. */
             min_heap_sink_down(mhp, min_index);
         }
     }
 }
 
 /**
- * This procedure returns the minimum value in the heap.
+ * This function returns the minimum value in the heap.
  */
 void* min_heap_get_min(min_heap mh)
 {
@@ -328,7 +328,7 @@ void* min_heap_get_min(min_heap mh)
 }
 
 /**
- * This procedure removes the minimum value from the heap and returns it.
+ * This function removes the minimum value from the heap and returns it.
  */
 void* min_heap_pop_min(min_heap* mhp)
 {

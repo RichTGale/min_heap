@@ -4,7 +4,7 @@
  * Demonstrates the use of the min_heap type.
  * 
  * Author: Richard Gale
- * Version: 26th Augist, 2022 
+ * Version: 17th June, 2023
  */
 
 #include <stdio.h>
@@ -27,7 +27,7 @@ int main(int argc, char* argv[])
     printf("VALUES UNORDERED:\n");
     for (i = 0; i < num_vals; i++)
     {
-        printf("%d, ", vals[i]);
+        printf("%ld, ", vals[i]);
     }
     printf("\n");
 
@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
     while(!(min_heap_is_empty(mh)))
     {
         // Removing and printing the minimum value in the heap.
-        printf("%d, ", *((int*) min_heap_pop_min(&mh)));
+        printf("%ld, ", *((uint64_t*) min_heap_pop_min(&mh)));
     }
     printf("\n");
 
