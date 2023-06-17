@@ -3,6 +3,8 @@
  * 
  * This file contains the internal data-structure and function definitions 
  * for a graph node.
+ * The node type represent a location on a graph that is used in an A*
+ * (a star) search algorithm.
  * 
  * Author: Richard Gale
  * Version: 16th June, 2023
@@ -39,7 +41,7 @@ struct node_data {
 };
 
 /**
- * This procedure initialises the node at the provided reference.
+ * This function initialises the node at the provided reference.
  */
 void node_init(node* np, uint8_t x, uint8_t y, uint8_t z, enum node_type type)
 {
@@ -66,8 +68,8 @@ void node_init(node* np, uint8_t x, uint8_t y, uint8_t z, enum node_type type)
 }
 
 /**
- * This procedure initialises the edges that belong to the neighbouring nodes 
- * of the node at the pointer that was provided to this procedure.
+ * This function initialises the edges that belong to the neighbouring nodes 
+ * of the node at the pointer that was provided to this function.
  */
 void node_init_edges(node* np, array neighbours, uint8_t* weights)
 {
@@ -116,8 +118,8 @@ void node_init_edges(node* np, array neighbours, uint8_t* weights)
 }
 
 /**
- * This procedure de-allocates memory from the node at the pointer
- * provided to this procedure as well as the memory allocated to its edges.
+ * This function de-allocates memory from the node at the pointer
+ * provided to this function as well as the memory allocated to its edges.
  */
 void node_free(node* np)
 {
@@ -136,8 +138,8 @@ void node_free(node* np)
 }
 
 /**
- * This procedure returns the node on a path created by the astar algorithm
- * that preceeds the node provided to this procedure on that path.
+ * This function returns the node on a path created by the astar algorithm
+ * that preceeds the node provided to this function on that path.
  */
 node* node_get_came_from(node n)
 {
@@ -145,7 +147,7 @@ node* node_get_came_from(node n)
 }
 
 /**
- * This procedure returns the x coordinate of the node provided to it.
+ * This function returns the x coordinate of the node provided to it.
  */
 uint8_t node_get_x(node n)
 {
@@ -153,7 +155,7 @@ uint8_t node_get_x(node n)
 }
 
 /**
- * This procedure returns the y coordinate of the node provided to it.
+ * This function returns the y coordinate of the node provided to it.
  */
 uint8_t node_get_y(node n)
 {
@@ -161,7 +163,7 @@ uint8_t node_get_y(node n)
 }
 
 /**
- * This procedure returns the z coordinate of the node provided to it.
+ * This function returns the z coordinate of the node provided to it.
  */
 uint8_t node_get_z(node n)
 {
@@ -169,9 +171,9 @@ uint8_t node_get_z(node n)
 }
 
 /**
- * This procedure returns the estimated total cost of a path from the start
+ * This function returns the estimated total cost of a path from the start
  * node to the goal node if the path goes through the node provided to
- * this procedure.
+ * this function.
  */
 uint64_t node_get_f(node n)
 {
@@ -179,8 +181,8 @@ uint64_t node_get_f(node n)
 }
 
 /**
- * This procedure returns the cost of a path from its start to the
- * node provided to this procedure.
+ * This function returns the cost of a path from its start to the
+ * node provided to this function.
  */
 uint64_t node_get_g(node n)
 {
@@ -189,7 +191,7 @@ uint64_t node_get_g(node n)
 
 
 /**
- * This procedure returns the edges of the node provided to this procedure.
+ * This function returns the edges of the node provided to this procedure.
  */
 array node_get_edges(node n)
 {
@@ -197,7 +199,7 @@ array node_get_edges(node n)
 }
 
 /**
- * This procedure returns the node-type of the node provided to this procedure.
+ * This function returns the node-type of the node provided to this procedure.
  */
 enum node_type node_get_type(node n)
 {
@@ -205,8 +207,8 @@ enum node_type node_get_type(node n)
 }
 
 /**
- * This procedure sets the node on a path created by the astar algorithm
- * that preceeds the node at the node pointer provided to this procedure 
+ * This function sets the node on a path created by the astar algorithm
+ * that preceeds the node at the node pointer provided to this function 
  * on that path.
  */
 void node_set_came_from(node* n, node* came_from)
@@ -215,9 +217,9 @@ void node_set_came_from(node* n, node* came_from)
 }
 
 /**
- * This procedure sets the estimated total cost of a path from the start
+ * This function sets the estimated total cost of a path from the start
  * node to the goal node if the path goes through the node at the node pointer
- * provided to this procedure.
+ * provided to this function.
  */
 void node_set_f(node* n, uint64_t f)
 {
@@ -225,8 +227,8 @@ void node_set_f(node* n, uint64_t f)
 }
 
 /**
- * This procedure sets the cost of a path from its start to the
- * node at the node pointer provided to this procedure.
+ * This function sets the cost of a path from its start to the
+ * node at the node pointer provided to this function.
  */
 void node_set_g(node* n, uint64_t g)
 {
@@ -234,7 +236,7 @@ void node_set_g(node* n, uint64_t g)
 }
 
 /**
- * This procedure adds a connection from one graph node to another, making the
+ * This function adds a connection from one graph node to another, making the
  * "to" node be considered a neighbour of the "from" node.
  * Note: this creates a one-way connection.
  */
@@ -288,7 +290,7 @@ void node_add_edge(node* fromp, node* top, uint8_t weight)
     }
     else
     {
-        /* The nodes provided to this procedure were already neighbours so we
+        /* The nodes provided to this function were already neighbours so we
          * are printing a warning. */
         printf("\nWARNING: In function node_add_edge(): "
             "Node at coords (%d,%d,%d) was already a neighbour of the "
@@ -299,7 +301,7 @@ void node_add_edge(node* fromp, node* top, uint8_t weight)
 }
 
 /**
- * This procedure resets the node to its original state.
+ * This function resets the node to its original state.
  */
 void node_reset(node* n_ref)
 {
@@ -309,7 +311,7 @@ void node_reset(node* n_ref)
 }
 
 /**
- * This procedure removes a connection from one node from another, stopping
+ * This function removes a connection from one node from another, stopping
  * the "from" node from being considered a neighbour of the "to" node.
  * Note: this is a one-way disconnection.
  */
@@ -326,10 +328,10 @@ void node_remove_edge(node* fromp, node* top)
     /* The index of the current edge in the "to" node's edges array. */
     uint64_t e;
 
-    /* Presuming the nodes provided to this procedure are not neighbours. */
+    /* Presuming the nodes provided to this function are not neighbours. */
     already_neighbours = false;
 
-    /* Determining if the nodes provided to this procedure are neighbours,
+    /* Determining if the nodes provided to this function are neighbours,
      * and getting the index of the edge we need to remove. */
     for (e = 0 ; e < array_size((*top)->edges); e++)
     {
@@ -353,7 +355,7 @@ void node_remove_edge(node* fromp, node* top)
     /* Potentially printing a warning. */
     if (!already_neighbours)
     {
-        /* The nodes provided to this procedure were not neighbours so we
+        /* The nodes provided to this function were not neighbours so we
          * are printing a warning. */
         printf("\nWARNING: In function node_remove_edge(): "
             "Node at coords (%d,%d,%d) wasn't a neighbour of the "
@@ -364,7 +366,7 @@ void node_remove_edge(node* fromp, node* top)
 }
 
 /**
- * This procedure prints information about the node provided to it.
+ * This function prints information about the node provided to it.
  */
 void node_print(node n)
 {
