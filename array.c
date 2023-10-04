@@ -7,7 +7,7 @@
  * de-allocates memory for itself as elements are added and removed from it.
  *
  * Author: Richard Gale
- * Version: 17th June, 2023
+ * Version: 1.0.0
  */
 
 #include "array.h"

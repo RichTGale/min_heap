@@ -4,7 +4,7 @@
  * Demonstrates the use of the min_heap type.
  * 
  * Author: Richard Gale
- * Version: 26th Augist, 2022 
+ * Version: 1.0.0 
  */
 
 #include <stdio.h>
@@ -21,13 +21,13 @@ int main(int argc, char* argv[])
     uint64_t i; // The current index in the heap.
 
     // Initialising the heap.
-    min_heap_init(&mh, INTEGER);
+    min_heap_init(&mh);
 
     // Printing the values.
     printf("VALUES UNORDERED:\n");
     for (i = 0; i < num_vals; i++)
     {
-        printf("%d, ", vals[i]);
+        printf("%ld, ", vals[i]);
     }
     printf("\n");
 

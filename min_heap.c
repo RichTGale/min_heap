@@ -8,77 +8,64 @@
  * other value.
  * 
  * Author: Richard Gale
- * Version: 17th June, 2023
+ * Version: 1.0.0
  */
 
 #include "min_heap.h"
 
-/** 
- * Error codes.
- */
-#define HEAP_EMPTY_ERROR 1
-#define HEAP_FULL_ERROR 2
-
 /**
- * The number of values the heap can hold.
+ * This is the number of values the heap can hold.
  */
 #define MAX_CAPACITY UINT64_MAX 
 
 /**
- * The internal data-structure of the min_heap type.
+ * This is the internal data-structure of the min_heap type.
  */
 struct min_heap_data {
-    array heap;             // The heap's storage.
-    enum heap_types type;   // The data-type the min_heap can store
-    uint64_t num_elems;     // The number of elements stored in the heap.
+    array heap;             /* The heap's storage. */
+    uint64_t num_elems;     /* The number of elements stored in the heap. */
 };
 
 /**
- * This function initialises the min_heap at the provided min_heap pointer.
+ * This function initialises the min_heap provided to it.
  */
-void min_heap_init(min_heap* mhp, enum heap_types t)
+void min_heap_init(min_heap* mhp)
 {
-    /* Allocating memory for the heap. */
+    /* Allocate memory to the heap. */
     *mhp = (min_heap) malloc(sizeof(struct min_heap_data));
 
-    /* Initialising the heap's storage. */
+    /* Initialise the heap's storage. */
     array_init(&(*mhp)->heap);
 
-    /* Initialising the heap to store the specified data-type. */
-    (*mhp)->type = t;
-
-    /* Initialising our count of the number of elements that are stored
-     * in the heap. */
+    /* Initialise the number of elements that are stored in the heap. */
     (*mhp)->num_elems = 0;
 }
 
 /**
- * This function de-allocates memory from the min_heap at the min_heap 
- * pointer provided to it.
+ * This function destroys the min_heap provided to it.
  */
 void min_heap_free(min_heap* mhp)
 {
-    /* De-allocating memory from the heap's storage. */
+    /* De-allocate memory from the heap's storage. */
     array_free(&(*mhp)->heap);
 
-    /* De-allocating memory from the heap. */
+    /* De-allocate memory from the heap. */
     free(*mhp);
 }
 
 /**
  * This function returns true if the memory address of the value provided to
- * it is already in the min_heap at the min_heap pointer that was also
- * provided.
+ * it is already in the min_heap that was also provided to the function.
  */
 bool min_heap_val_exists(min_heap mh, void* val)
 {
-    /* Whether the value is already in the min_heap. */
+    /* This stores whether the value is already in the min_heap. */
     bool val_exists = false;
 
-    /* The index of the element in the heap we are comparing. */
+    /* This is the index of the element in the heap we are comparing. */
     uint64_t i;
 
-    /* Comparing the value provided to this function to all the lements in
+    /* Compare the value provided to this function to all the elements in
      * the heap. */
     for (i = 0; i < array_size(mh->heap); i++)
     {
@@ -89,231 +76,182 @@ bool min_heap_val_exists(min_heap mh, void* val)
         }
     }
 
-    /* Returning whether the value was already in the heap. */
+    /* Return whether the value was already in the heap. */
     return val_exists;
 }
 
 /**
- * This function returns true if the provided min_heap is not storing
+ * This function returns true if the min_heap provided to it is not storing
  * any values.
  */
 bool min_heap_is_empty(min_heap mh)
 {
-    /* Whether the min_heap is not storing any values. */
-    bool is_empty = false;  
-
-    /* Determining whether there are any values stored in the heap. */
-    if (mh->num_elems == 0)
-    {
-        /* There are no values in the heap. */
-        is_empty = true;
-    }
-
-    /* Returning whether the heap is not storing any values. */
-    return is_empty;
+    /* Return whether the heap is not storing any values. */
+    return mh->num_elems == 0;
 }
 
 /**
- * This function swaps the value in the min_heap's storage at the index 
- * provided to the function with its parent's value if the value at the 
- * index is lower than the parent, moving the value up through the heap until 
- * the minimum heap state is satisfied.
+ * This function swaps the value at the index provided to it, which is in the 
+ * min_heap also provided's storage, with its parent's value if the value at
+ * the index is lower than the parent. The function then calls itself
+ * recursively, moving the value up through the heap until a minimum heap
+ * state is satisfied.
  */
 void min_heap_float_up(min_heap* mhp, int child_index)
 {
-    /* A pointer to the parent value. */
+    /* This is a pointer to the parent value. */
     void* parentp;
     
-    /* A pointer to the child value. */
+    /* This is a pointer to the child value. */
     void* childp;
 
-    /* The parent value. */ 
+    /* This is the parent value. */ 
     uint64_t parent_val;
 
-    /* The child value. */
+    /* This is the child value. */
     uint64_t child_val;
 
-    /* The index of the parent value in the heap's storage. */
+    /* This is the index of the parent value in the heap's storage. */
     uint64_t parent_index; 
 
-    /* Determining if the child is not already the minimum value in 
-     * the heap. */
+    /* Check if the child is not already the minimum value in the heap. */
     if (child_index > 0)
     {
-        /* Calculating the parent index. */
+        /* Calculate the parent index. */
         parent_index = (child_index - 1) / 2;
 
-        /* Getting the child and the parent addresses 
-         * from the heap. */
+        /* Get the child and the parent addresses from the heap. */
         parentp = array_get_data((*mhp)->heap, parent_index);
         childp = array_get_data((*mhp)->heap, child_index);
 
-        /* Getting the child and parent values for the data-type
-         * particular to the heap. */
-        if ((*mhp)->type == NODE)
-        {
-            // Node type
-            parent_val = node_get_f(*((node*) parentp));
-            child_val = node_get_f(*((node*) childp));
-        }
-        else if ((*mhp)->type == INTEGER)
-        {
-            // Integer type
-            parent_val = *((uint64_t*) parentp);
-            child_val = *((uint64_t*) childp);
-        }
+        /* Get the child and parent values. */
+        parent_val = *((uint64_t*) parentp);
+        child_val = *((uint64_t*) childp);
 
-        /* Determining if we should swap the child and the parent. */ 
+        /* Check if the positions of the child and the parent in the min heap
+         * should be swapped. */ 
         if (child_val < parent_val)
         {
-            /* The child has a lower value than the parent so we are
-             * swapping them. */
+            /* The child has a lower value than the parent so swap them. */
             array_set_data(&(*mhp)->heap, child_index, parentp);
             array_set_data(&(*mhp)->heap, parent_index, childp);
 
-            /* Repeating this function on the same value. */
+            /* Repeat this function on the same value. */
             min_heap_float_up(mhp, parent_index);
         }
     }
 }
 
 /**
- * This function adds a pointer to a value to the min_heap.
+ * This function adds a value to the min_heap.
  */
 void min_heap_add(min_heap* mhp, void* data)
 {
-    /* Determining if the min heap has space to store a new value. */
+    /* Check if the min heap has space to store a new value. */
     if ((*mhp)->num_elems < MAX_CAPACITY)
     {
-        /* Storing the new reference. */
+        /* Store the new value. */
         array_push_back(&(*mhp)->heap, data);
 
-        /* Placing the reference at the min_heap's storage index that
-         * will satisfy the minimum heap property. */
+        /* Place the value at the min_heap's storage index that will satisfy
+         * its minimum heap property. */
         min_heap_float_up(mhp, (*mhp)->num_elems);
 
-        /* Counting the new reference. */
+        /* Record that there's a new value in the heap. */
         (*mhp)->num_elems++;
     }
     else
     {
         /* The heap didn't have enough space in its storage to store a new 
-         * reference, so we are printing an error message and exiting the
-         * program. */
+         * value, so we are print an error message and exit the program. */
         printf("\nERROR: In function min_heap_add(): You attempted to "
                 "add a value to a heap that was at maximum capacity!\n");
-        exit(HEAP_FULL_ERROR);
+        exit(EXIT_FAILURE);
     }
 }
 
 /**
- * Swaps the value in the heap at the provided index with
- * the smaller of its two children, moving the value down through
- * the heap until the minimum heap property is satisfied. 
+ * This function swaps the value at the index provided to it, which is in the
+ * min_heap also provided's storage, with the smaller of its two children. The
+ * function then calls itself recursively, moving the value down through the
+ * heap until a minimum heap state is satisfied. 
  */
 void min_heap_sink_down(min_heap* mhp, int parent_index)
 {
-    /* A pointer to the parent's left child. */
+    /* This is a pointer to the parent's left child. */
     void* leftp;
 
-    /* A pointer to the parent's right child. */
+    /* iThis is a pointer to the parent's right child. */
     void* rightp;
 
-    /* A temporary pointer for swapping. */
+    /* This is a temporary pointer for swapping. */
     void* tempp;
 
-    /* The minimum of the children's values. */
+    /* This is the minimum of the children's values. */
     uint64_t min_val;
 
-    /* The value of the storage element at the index provided to
+    /* This is the value of the storage element at the index provided to
      * this function. */
     uint64_t parent_val;
 
-    /* The index of the parent's left child in the heap's storage. */
+    /* This is the index of the parent's left child in the heap's storage. */
     uint64_t left_index;
 
-    /* The index of the parent's right child in the heap's storage. */
+    /* This is the index of the parent's right child in the heap's storage. */
     uint64_t right_index;
 
-    /* The minimum of the parent's, left and right children's values. */
+    /* This is the minimum of the parent's, left and right childs' values. */
     uint64_t min_index;
 
-    /* Calculating the indices of the two children. */
+    /* Calculate the indices of the two children. */
     left_index = (parent_index * 2) + 1;
     right_index = (parent_index * 2) + 2;
 
-    /* Defaulting the minimum of the parent and child values index to
-     * the parent's index. */
+    /* Default the minimum of the parent and child values index to the 
+     * parent's index. */
     min_index = parent_index;
 
-    /* Determining the minimum value between the children. 
+    /* Check the minimum value between the children. 
      * There may not necessarily be any children. First we determine if there
      * are two children */
     if (left_index < (*mhp)->num_elems && right_index < (*mhp)->num_elems)
     {
-        /* Getting the children from the heap storage. */
+        /* Get the children from the heap storage. */
         leftp = array_get_data((*mhp)->heap, left_index);
         rightp = array_get_data((*mhp)->heap, right_index);
 
-        /* Comparing the values of the two children with consideration towards
-         * the particular data-type the heap deals with. */
-        if ((*mhp)->type == NODE)
-        {
-            /* Comparing the values of the children and getting the one with
-             * the lower/minimum value between the two. */
-            min_index = node_get_f(*((node*) leftp)) < 
-                node_get_f(*((node*) rightp)) ? left_index : right_index;
-        }
-        else if ((*mhp)->type == INTEGER)
-        {
-            /* Comparing the values of the children and getting the one with
-             * the lower/minimum value between the two. */
-            min_index = *((uint64_t*) leftp) < 
-                *((uint64_t*) rightp) ? left_index : right_index;
-        }
+        /* Compare the values of the children and record the index of the child
+         * with the lower/minimum value between the two. */
+        min_index = *((uint64_t*) leftp) < 
+            *((uint64_t*) rightp) ? left_index : right_index;
     }
-    /* Determining if there is only one child. The left child always has a
+    /* Check if there is only one child. The left child always has a
      * higher indices in the heap's storage than the right child. */
     else if (left_index < (*mhp)->num_elems)
     {
-        /* There is only a left child so we are setting that as the child with the
+        /* There is only a left child so set that as the child with the
          * lower/minimum value between the children. */
         min_index = left_index;    
     } 
 
-    /* Determining if there were any children. */
+    /* Check if there were any children. */
     if (min_index != parent_index)
     {
-        /* Getting the minimum child value and the parent value with
-         * consideration towards the particular data-type the heap
-         * deals with. */
-        if ((*mhp)->type == NODE)
-        {
-            min_val = 
-                node_get_f(*((node*) array_get_data((*mhp)->heap, min_index)));
-            parent_val = 
-                node_get_f(*((node*) array_get_data((*mhp)->heap, parent_index)));
-        }
-        else if ((*mhp)->type == INTEGER)
-        {
-            min_val = 
-                *((uint64_t*) array_get_data((*mhp)->heap, min_index));
-            parent_val = 
-                *((uint64_t*) array_get_data((*mhp)->heap, parent_index));
-        }
+        /* Get the minimum child value and the parent value. */
+        min_val = *((uint64_t*) array_get_data((*mhp)->heap, min_index));
+        parent_val = *((uint64_t*) array_get_data((*mhp)->heap, parent_index));
 
-        /* Determining if a value lower than the parent's was found. */
+        /* Check if a value lower than the parent's was found. */
         if (min_val < parent_val)
         {
-            /* The child value is lower than the parent so we are
-             * swapping them. */
+            /* The child's value is lower than the parent so swap them. */
             tempp = array_get_data((*mhp)->heap, min_index);
             array_set_data(&(*mhp)->heap, 
                     min_index, array_get_data((*mhp)->heap, parent_index));
             array_set_data(&(*mhp)->heap, parent_index, tempp);
 
-            /* Repeating this function on the same value which was at the
-             * index provided to this function in the heap's storage. */
+            /* Call this function on the original value that was at the
+             * index provided to this function. */
             min_heap_sink_down(mhp, min_index);
         }
     }
@@ -324,7 +262,7 @@ void min_heap_sink_down(min_heap* mhp, int parent_index)
  */
 void* min_heap_get_min(min_heap mh)
 {
-    /* Returning the heap's minimum value. */
+    /* Return the heap's minimum value. */
     return array_get_data(mh->heap, 0);
 }
 
@@ -333,44 +271,46 @@ void* min_heap_get_min(min_heap mh)
  */
 void* min_heap_pop_min(min_heap* mhp)
 {
-    /* The minimum value in the heap. */
+    /* This is the minimum value in the heap. */
     void* min;
 
-    /* Getting the minimum value in the heap. */
+    /* Check if there are multiple values in the heap. */
     if ((*mhp)->num_elems > 1)
     {
-        /* There are multiple values in the heap. Here we are
-         * copying the minimum. */
+        /* There are multiple values in the heap. Copy the minimum value. */
         min = min_heap_get_min(*mhp);
 
-        /* Moving the maximum value in the heap to the heap's top.
+        /* Move the maximum value in the heap to the heap's top.
          * This overwrites the minimum value that was still in the
          * heap's storage. */
         array_set_data(&(*mhp)->heap, 0, array_pop_back(&(*mhp)->heap));
 
-        /* Recording that a value has been deleted. */
+        /* Record that a value has been removed from the heap. */
         (*mhp)->num_elems--;
 
-        /* Sinking the maximum value down through the heap. This re-orders
-         * the heap into its minimum-heap state. */
+        /* Sink the maximum value down through the heap. This re-orders the
+         * heap into its minimum-heap state. */
         min_heap_sink_down(mhp, 0);
-    } 
+    }
+
+    /* Check if there is only one value in the heap. */ 
     else if ((*mhp)->num_elems == 1)
     {
-        /* There is only one value in the heap, so we are taking it out. */
+        /* There is only one value in the heap, so take it out. */
         min = array_pop_back(&(*mhp)->heap);
 
-        /* Recording that a value has been removed from the heap. */
+        /* Record that a value has been removed from the heap. */
         (*mhp)->num_elems--;
     } 
     else
     {
-        /* There were no values in the heap, so we are printing an error
-         * message and exiting the program. */
-        printf("ERROR: In function min_heap_pop_min(): heap is empty!");
-        exit(HEAP_EMPTY_ERROR);
+        /* There were no values in the heap, so print an error message and
+         * exit the program. */
+        fprintf(stdout,
+                "ERROR: In function min_heap_pop_min(): heap is empty!");
+        exit(EXIT_FAILURE);
     }
 
-    /* Returning the minimum value that was stored in the heap. */
+    /* Return the minimum value that was stored in the heap. */
     return min;
 }

@@ -8,7 +8,7 @@
  * other value.
  * 
  * Author: Richard Gale
- * Version: 17th June, 2023
+ * Version: 1.0.0
  */
 
 #ifndef MIN_HEAP_H
@@ -23,30 +23,23 @@
 #include "node.h"
 
 /**
- * The identities of the types of data the min_heap can use.
- */
-enum heap_types { INTEGER, NODE };
-
-/**
  * The min_heap data structure.
  */
 typedef struct min_heap_data* min_heap;
 
 /**
- * This function initialises the min_heap at the provided min_heap pointer.
+ * This function initialises the min_heap provided to it.
  */
-void min_heap_init(min_heap* mhp, enum heap_types t);
+void min_heap_init(min_heap* mhp);
 
 /**
- * This function de-allocates memory from the min_heap at the min_heap 
- * pointer provided to it.
+ * This function destroys the min_heap provided to it.
  */
 void min_heap_free(min_heap* mhp);
 
 /**
  * This function returns true if the memory address of the value provided to
- * it is already in the min_heap at the min_heap pointer that was also
- * provided.
+ * it is already in the min_heap that was also provided to the function.
  */
 bool min_heap_val_exists(min_heap mh, void* val);
 
@@ -57,7 +50,7 @@ bool min_heap_val_exists(min_heap mh, void* val);
 bool min_heap_is_empty(min_heap mh);
 
 /**
- * This function adds a pointer to a value to the min_heap.
+ * This function adds a value to the min_heap.
  */
 void min_heap_add(min_heap* mhp, void* data);
 
