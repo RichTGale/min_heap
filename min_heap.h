@@ -20,7 +20,6 @@
 #include <stdint.h>
 
 #include "array.h"
-#include "node.h"
 
 /**
  * The min_heap data structure.

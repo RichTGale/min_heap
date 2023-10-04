@@ -11,7 +11,6 @@
 #include <stdint.h>
 
 #include "min_heap.h"
-#include "node.h"
 
 int main(int argc, char* argv[])
 {
