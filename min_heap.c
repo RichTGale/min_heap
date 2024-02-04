@@ -6,9 +6,76 @@
  * This is a minimum heap. It stores values as a binary-tree and in such an
  * order that the minimum value is at the very top, and is not a child of any
  * other value.
+ *
+ * USAGE INSTRUCTIONS:
+ 
+ * 1. The heap needs to be passed a pointer to a custom struct data-type. The
+ * value that the heap will sort should be contained in that struct:
+ *
+ * custom_type.h
+ * --------------------------------------------------
+ *
+ * typedef struct custom_type_data* custom_type;
+ * 
+ * ...
+ * --------------------------------------------------
+ * 
+ * custom_type.c
+ * -------------------------------------------------
+ *
+ * struct custom_type_data {
+ *     int value;
+ * };
+ *
+ * ...
+ * -------------------------------------------------
+ *
+ * In the above example, the name of the type's property, value, doesn't matter
+ * and is arbitrary. Additionally, the property's type could be changed to
+ * any number type, such as double.
+ *
+ * 2. A function must be written that accepts a pointer to a variable of type
+ * void as one of its parameters. The function should cast the pointer to your
+ * custom struct type, and then return the property the struct contains that
+ * the heap will use. The function needs to be named min_heap_get_val:
+ *
+ * custom_type.h
+ * ------------------------------------------------
+ * ...
+ *
+ *  int min_heap_get_value(void* data_type);
+ *
+ * ...
+ * ------------------------------------------------
+ *
+ * custom_type.c
+ * ------------------------------------------------
+ * ...
+ *
+ * int min_heap_get_val(void* data_type)
+ * {
+ *     custom_type* ct = (custom_type*) data_type;
+ *
+ *     return (*ct)->value;
+ * }
+ *
+ * ...
+ * --------
+ *
+ * 3. An include statement needs to be added to the file min_heap.h that
+ * includes your type:
+ *
+ * min_heap.h
+ * ------------------------------------------------
+ * ...
+ *  
+ * #include "custom_type.h"
+ *
+ * ...
+ * ------------------------------------------------
  * 
  * Author: Richard Gale
- * Version: 1.0.0
+ * Version: 1.0.1
  */
 
 #include "min_heap.h"
@@ -125,8 +192,8 @@ void min_heap_float_up(min_heap* mhp, int child_index)
         childp = array_get_data((*mhp)->heap, child_index);
 
         /* Get the child and parent values. */
-        parent_val = *((uint64_t*) parentp);
-        child_val = *((uint64_t*) childp);
+        parent_val = min_heap_get_val(parentp);
+        child_val = min_heap_get_val(childp);
 
         /* Check if the positions of the child and the parent in the min heap
          * should be swapped. */ 
@@ -222,8 +289,8 @@ void min_heap_sink_down(min_heap* mhp, int parent_index)
 
         /* Compare the values of the children and record the index of the child
          * with the lower/minimum value between the two. */
-        min_index = *((uint64_t*) leftp) < 
-            *((uint64_t*) rightp) ? left_index : right_index;
+        min_index = min_heap_get_val(leftp) < 
+            min_heap_get_val(rightp) ? left_index : right_index;
     }
     /* Check if there is only one child. The left child always has a
      * higher indices in the heap's storage than the right child. */
@@ -238,8 +305,8 @@ void min_heap_sink_down(min_heap* mhp, int parent_index)
     if (min_index != parent_index)
     {
         /* Get the minimum child value and the parent value. */
-        min_val = *((uint64_t*) array_get_data((*mhp)->heap, min_index));
-        parent_val = *((uint64_t*) array_get_data((*mhp)->heap, parent_index));
+        min_val = min_heap_get_val(array_get_data((*mhp)->heap, min_index));
+        parent_val = min_heap_get_val(array_get_data((*mhp)->heap, parent_index));
 
         /* Check if a value lower than the parent's was found. */
         if (min_val < parent_val)
