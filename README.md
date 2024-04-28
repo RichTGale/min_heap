@@ -26,7 +26,7 @@ struct custom_type_data {
 ...
 --------------------------------------------------
 ```
-In the above example, the name of the type's property, value, doesn't matter and is arbitrary. Additionally, the property's type could be changed to any number type, such as double.
+In the above example, the variable name of the type's property, ```value```, doesn't matter. It could be changed to anything. Additionally, the property's type could be changed to any number type, such as ```double```.
 
  2. A function must be written that accepts a pointer to a variable of type void as one of its parameters. The function should cast the pointer to your custom struct type, and then return the property the struct contains that the heap will use. The function needs to be named ```min_heap_get_val```:
 ```
